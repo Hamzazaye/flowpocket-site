@@ -1,0 +1,36 @@
+{
+  "name": "Error alert with Open in Flowpocket link",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "6a1f0e0e-0000-4000-8000-000000000001",
+      "name": "Error Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Builds a one-tap link that opens this failed run in the Flowpocket phone app.\n// Set SERVER to your n8n address without the scheme, exactly as saved in Flowpocket (e.g. n8n.example.com or 192.168.1.10:5678).\nconst SERVER = 'n8n.example.com';\nconst e = $input.first().json;\nconst id = e.execution?.id;\nconst wf = e.workflow?.name ?? 'workflow';\nconst node = e.execution?.lastNodeExecuted ?? 'unknown step';\nconst link = `flowpocket://execution/${id}?server=${encodeURIComponent(SERVER)}`;\nreturn [{ json: { text: `n8n failure: ${wf} stopped at \"${node}\".\\nOpen in Flowpocket: ${link}`, link, workflow: wf, executionId: id } }];"
+      },
+      "id": "6a1f0e0e-0000-4000-8000-000000000002",
+      "name": "Build Flowpocket link",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [260, 0]
+    },
+    {
+      "parameters": {},
+      "id": "6a1f0e0e-0000-4000-8000-000000000003",
+      "name": "Send this text to Telegram, Slack, email or SMS",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [520, 0]
+    }
+  ],
+  "connections": {
+    "Error Trigger": { "main": [[{ "node": "Build Flowpocket link", "type": "main", "index": 0 }]] },
+    "Build Flowpocket link": { "main": [[{ "node": "Send this text to Telegram, Slack, email or SMS", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" }
+}

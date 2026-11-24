@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://hamzazaye.github.io/flowpocket-site/sitemap.xml
